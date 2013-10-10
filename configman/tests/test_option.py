@@ -36,6 +36,7 @@
 #
 # ***** END LICENSE BLOCK *****
 
+from decimal import Decimal
 import unittest
 import re
 import datetime
@@ -207,7 +208,6 @@ class TestCase(unittest.TestCase):
         self.assertEqual(opt.default, 100.0)
         self.assertEqual(opt.from_string_converter, float)
 
-        from decimal import Decimal
         opt = Option('name', default=Decimal('100.0'))
         self.assertEqual(opt.default, Decimal('100.0'))
         self.assertEqual(opt.from_string_converter, Decimal)
@@ -392,3 +392,15 @@ class TestCase(unittest.TestCase):
         o2.set_default(68)
         self.assertTrue(o2.value, 68)
         self.assertTrue(o2.default, 68)
+
+    def test__str__(self):
+        opt = Option('name')
+        self.assertEqual(str(opt), '')
+        opt = Option('name', 3.14)
+        self.assertEqual(str(opt), '3.14')
+
+        opt = Option('name', Decimal('3.14'))
+        self.assertEqual(str(opt), '3.14')
+
+        # FIXME: need a way to test a value whose 'from_string_converter'
+        # requires quotes

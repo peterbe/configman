@@ -100,6 +100,27 @@ class Option(object):
             return '<Option: %r, default=%r>' % (self.name, self.default)
 
     #--------------------------------------------------------------------------
+    def __str__(self):
+        """return an instance of Option's value as a string.
+
+        The option instance doesn't actually have to be from the Option class. All
+        it requires is that the passed option instance has a ``value`` attribute.
+        """
+        if self.value is None:
+            return ''
+        try:
+            converter = conv.to_string_converters[type(self.value)]
+            s = converter(self.value)
+        except KeyError:
+            if not isinstance(self.value, basestring):
+                s = unicode(self.value)
+            else:
+                s = self.value
+        if self.from_string_converter in conv.converters_requiring_quotes:
+            s = "'''%s'''" % s
+        return s
+
+    #--------------------------------------------------------------------------
     def _deduce_converter(self, default):
         default_type = type(default)
         return conv.from_string_converters.get(default_type, default_type)
